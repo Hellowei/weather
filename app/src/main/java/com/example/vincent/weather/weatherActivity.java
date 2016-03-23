@@ -52,6 +52,7 @@ public class weatherActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View V) {
+
                 getCityWeather("2235",weatherKey);
             }
         });
@@ -139,7 +140,13 @@ public class weatherActivity extends AppCompatActivity {
     }
     private void getCityWeather(String cityCode,String key) {
         String address = "http://v.juhe.cn/weather/index?format=2&cityname="+cityCode+"&key="+key;
-        queryFromCityServer(address, "city");
+        String data = "http://open.weather.com.cn/data/?areaid=101010100&type=forecast_f&date=201603231453&appid=ce74b07002e7adfe";
+        String data1 = "http://open.weather.com.cn/data/?areaid=101010100&type=forecast_f&date=201603231453&appid=ce74b0";
+        //密钥
+        String key1 = "f82321_SmartWeatherAPI_33d48bf";
+        String str =  toURLString.standardURLEncoder(data, key1);
+        Log.d(TAG, "dggg:" +data1+"&key="+str);
+        queryFromCityServer(data1+"&key="+str, "city");
     }
     /**
      * 根据传入的地址和类型去向服务器查询天气代号或者天气信息。
@@ -148,14 +155,14 @@ public class weatherActivity extends AppCompatActivity {
         HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
             @Override
             public void onFinish(final String response) {
-                Log.d(TAG, "dggg6" +response);
+
                 if ("province".equals(type)) {
                     if (!TextUtils.isEmpty(response)) {
                         Log.d(TAG,response);
                     }
                 } else  if ("city".equals(type)) {
                     if (!TextUtils.isEmpty(response)) {
-                        Log.d(TAG,response);
+                        Log.d(TAG,"KKKKKKK"+response+"HHHHHH");
                     }
                 }
             }
