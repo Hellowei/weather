@@ -1,3 +1,38 @@
 <resources>
     <string name="app_name">weather</string>
+    <string name="weather_00">晴</string>
+    <string name="weather_01">多云</string>
+    <string name="weather_02">阴</string>
+    <string name="weather_03">阵雨</string>
+    <string name="weather_04">雷阵雨</string>
+    <string name="weather_05">雷阵雨伴冰</string>
+    <string name="weather_06">雨雪</string>
+    <string name="weather_07">小雨</string>
+    <string name="weather_08">中雨</string>
+    <string name="weather_09">大雨</string>
+    <string name="weather_10">暴雨</string>
+    <string name="weather_11">大暴雨</string>
+    <string name="weather_12">特大暴雨</string>
+    <string name="weather_13">阵雪</string>
+    <string name="weather_14">小雪</string>
+    <string name="weather_15">中雪</string>
+    <string name="weather_16">大雪</string>
+    <string name="weather_17">暴雪</string>
+    <string name="weather_18">雾</string>
+    <string name="weather_19">冻雨</string>
+    <string name="weather_20">沙尘暴</string>
+   <string name="weather_21">小到中雨</string>
+   <string name="weather_22">中到大雨</string>
+   <string name="weather_23">大到暴雨</string>
+   <string name="weather_24">暴到大暴雨</string>
+   <string name="weather_25">大暴到特大暴雨</string>
+   <string name="weather_26">小到中雪</string>
+   <string name="weather_27">中到大雪</string>
+   <string name="weather_28">大到暴雪</string>
+   <string name="weather_29">浮尘</string>
+   <string name="weather_30">扬沙 </string>
+   <string name="weather_31">强沙尘暴</string>
+   <string name="weather_53">霾</string>
+   <string name="weather_99">未知</string>
+
 </resources>

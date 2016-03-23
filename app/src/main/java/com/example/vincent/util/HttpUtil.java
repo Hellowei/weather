@@ -18,7 +18,6 @@ public class HttpUtil {
 				HttpURLConnection connection = null;
 				try {
 					String TAG = "weatherActivity";
-					Log.d(TAG, ":::+::" +address );
 					URL url = new URL(address);
 					connection = (HttpURLConnection) url.openConnection();
 					connection.setRequestMethod("GET");
@@ -28,11 +27,9 @@ public class HttpUtil {
 					BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 					StringBuilder response = new StringBuilder();
 					String line;
-					Log.d(TAG, "WILLLL"  );
 					while ((line = reader.readLine()) != null) {
 						response.append(line);
 					}
-					Log.d(TAG, "response:"+response  );
 					if (listener != null) {
 						// 回调onFinish()方法
 						listener.onFinish(response.toString());

@@ -3,6 +3,8 @@ package com.example.vincent.weather;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Message;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,12 +30,24 @@ import java.util.List;
 public class weatherActivity extends AppCompatActivity {
     String TAG = "weatherActivity";
     private ListView listView;
+    private String weatherMsg;
     private String weatherKey = "274eee62f6756e36ea8beafd986aa7b3";
     private String areaKey = "a1f1216eb5152943deef4d02c9084a94";
     private ArrayAdapter<String> adapter;
     private List<String> dataList = new ArrayList<String>();
     private TextView weatherResult;
+    private Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
 
+            switch (msg.what) {
+                case 1:
+                    Log.d(TAG, "revdde msg" + msg.what);
+                    weatherResult.setText("dddd");
+                    Log.d(TAG, "r:" + getWeather(0)+ getWeather(1)+ getWeather(5)+ getWeather(10));
+                    break;
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,19 +57,18 @@ public class weatherActivity extends AppCompatActivity {
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, dataList);
         listView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-
         dataList.add("--");
         dataList.add("++");
         listView.setSelection(1);
-//        queryWeatherCode("190404");
         Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View V) {
-
-                getCityWeather("2235",weatherKey);
+                getCityWeather("2235", weatherKey);
             }
         });
+
+
     }
 
     /**
@@ -65,6 +78,15 @@ public class weatherActivity extends AppCompatActivity {
         String address = "http://www.weather.com.cn/data/list3/city" + countyCode + ".xml";
         queryFromServer(address, "countyCode");
         Log.d(TAG, "dddd86" + countyCode);
+    }
+    private String getWeather(int weatherCode) {
+        int key = R.string.weather_00 + weatherCode ;
+        if(weatherCode == 53)
+            key = R.string.weather_53 ;
+        else if(weatherCode == 99)
+            key = R.string.weather_99 ;
+        return  getString(key);
+
     }
 
     /**
@@ -124,24 +146,15 @@ public class weatherActivity extends AppCompatActivity {
      //   Intent intent = new Intent(this, com.coolweather.app.service.AutoUpdateService.class);
      //   startService(intent);
     }
-    /**
-     * 查询省。
-     */
-    private void queryProvince(int areaID,String key) {
-
-        String address = "http://AreaData.api.juhe.cn/AreaHandler.ashx?action=getArea&areaID="+areaID +"&key=" + key;
-        Log.d(TAG, address );
-        queryFromCityServer(address, "province");
-        Log.d(TAG, "dggguu6" );
-    }
-    private void queryCity(String cityCode) {
-        String address = "http://www.weather.com.cn/data/list3/city"+cityCode+".xml";
-        queryFromCityServer(address, "city");
+    private String getSMT_API_URL(String areaid,String date) {
+        String appid      = "ce74b07002e7adfe";
+        String appid_6bit = "ce74b0";
+        String URL="";
+        return URL;
     }
     private void getCityWeather(String cityCode,String key) {
-        String address = "http://v.juhe.cn/weather/index?format=2&cityname="+cityCode+"&key="+key;
-        String data = "http://open.weather.com.cn/data/?areaid=101010100&type=forecast_f&date=201603231453&appid=ce74b07002e7adfe";
-        String data1 = "http://open.weather.com.cn/data/?areaid=101010100&type=forecast_f&date=201603231453&appid=ce74b0";
+        String data = "http://open.weather.com.cn/data/?areaid=101280601&type=forecast_f&date=201603231453&appid=ce74b07002e7adfe";
+        String data1 = "http://open.weather.com.cn/data/?areaid=101280601&type=forecast_f&date=201603231453&appid=ce74b0";
         //密钥
         String key1 = "f82321_SmartWeatherAPI_33d48bf";
         String str =  toURLString.standardURLEncoder(data, key1);
@@ -162,13 +175,26 @@ public class weatherActivity extends AppCompatActivity {
                     }
                 } else  if ("city".equals(type)) {
                     if (!TextUtils.isEmpty(response)) {
-                        Log.d(TAG,"KKKKKKK"+response+"HHHHHH");
+
+                        Log.d(TAG, "KKKKKKK" + response + "HHHHHH");
+                       //
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Message ms = new Message();
+                                ms.what = 1;
+                                Log.d(TAG,"send mes vill"+ms.what);
+                                handler.sendMessage(ms);
+                                Log.d(TAG, "send over" + ms.what);
+                            }
+                        }).start();
                     }
                 }
             }
 
             @Override
             public void onError(Exception e) {
+                Log.d(TAG,"KKKKKKerrorHHHHHH");
             }
         });
     }
