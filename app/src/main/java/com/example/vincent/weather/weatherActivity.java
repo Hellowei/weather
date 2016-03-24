@@ -9,41 +9,44 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.example.vincent.util.HttpCallbackListener;
 import com.example.vincent.util.HttpUtil;
 import com.example.vincent.util.Utility;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class weatherActivity extends AppCompatActivity {
     String TAG = "weatherActivity";
     private ListView listView;
+    private String key = "f82321_SmartWeatherAPI_33d48bf";
+    private String appid  = "ce74b07002e7adfe";
     private String weatherMsg;
-    private String weatherKey = "274eee62f6756e36ea8beafd986aa7b3";
-    private String areaKey = "a1f1216eb5152943deef4d02c9084a94";
     private ArrayAdapter<String> adapter;
     private List<String> dataList = new ArrayList<String>();
     private TextView weatherResult;
+    private String updateWeatherInfo;
+    public static final int UPDATE_WEATHER = 1;
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
-
             switch (msg.what) {
-                case 1:
-                    Log.d(TAG, "revdde msg" + msg.what);
-                    weatherResult.setText("dddd");
-                    Log.d(TAG, "r:" + getWeather(0)+ getWeather(1)+ getWeather(5)+ getWeather(10));
+                case UPDATE_WEATHER:
+                    Log.d(TAG,"GETMSG:"+updateWeatherInfo);
+                    weatherResult.setText(updateWeatherInfo);
                     break;
             }
         }
@@ -64,22 +67,12 @@ public class weatherActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View V) {
-                getCityWeather("2235", weatherKey);
+                getCityWeather("2235",key,appid);
             }
         });
-
-
     }
 
-    /**
-     * 查询县级代号所对应的天气代号。
-     */
-    private void queryWeatherCode(String countyCode) {
-        String address = "http://www.weather.com.cn/data/list3/city" + countyCode + ".xml";
-        queryFromServer(address, "countyCode");
-        Log.d(TAG, "dddd86" + countyCode);
-    }
-    private String getWeather(int weatherCode) {
+    private String getWeatherByCode(int weatherCode) {
         int key = R.string.weather_00 + weatherCode ;
         if(weatherCode == 53)
             key = R.string.weather_53 ;
@@ -88,53 +81,6 @@ public class weatherActivity extends AppCompatActivity {
         return  getString(key);
 
     }
-
-    /**
-     * 查询天气代号所对应的天气。
-     */
-    private void queryWeatherInfo(String weatherCode) {
-        String address = "http://www.weather.com.cn/data/cityinfo/" + weatherCode + ".html";
-        queryFromServer(address, "weatherCode");
-    }
-
-    /**
-     * 根据传入的地址和类型去向服务器查询天气代号或者天气信息。
-     */
-    private void queryFromServer(final String address, final String type) {
-        HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
-            @Override
-            public void onFinish(final String response) {
-                Log.d(TAG, "d66 " + response);
-                if ("countyCode".equals(type)) {
-                    if (!TextUtils.isEmpty(response)) {
-                        // 从服务器返回的数据中解析出天气代号
-                        String[] array = response.split("\\|");
-                        if (array != null && array.length == 2) {
-                            String weatherCode = array[1];
-                            queryWeatherInfo(weatherCode);
-                            Log.d(TAG, "dddd" + response);
-                        }
-                    }
-                } else if ("weatherCode".equals(type)) {
-                    // 处理服务器返回的天气信息
-                    Log.d(TAG, "ddf" + response);
-                    Utility.handleWeatherResponse(weatherActivity.this, response);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showWeather();
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onError(Exception e) {
-            }
-        });
-        }
-
-
     /**
      * 从SharedPreferences文件中读取存储的天气信息，并显示到界面上。
      */
@@ -146,52 +92,69 @@ public class weatherActivity extends AppCompatActivity {
      //   Intent intent = new Intent(this, com.coolweather.app.service.AutoUpdateService.class);
      //   startService(intent);
     }
-    private String getSMT_API_URL(String areaid,String date) {
-        String appid      = "ce74b07002e7adfe";
-        String appid_6bit = "ce74b0";
-        String URL="";
-        return URL;
+    private String getBeiJingTime() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmm");
+        Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+        String BeiJingTime = formatter.format(curDate);
+        return  BeiJingTime;
     }
-    private void getCityWeather(String cityCode,String key) {
-        String data = "http://open.weather.com.cn/data/?areaid=101280601&type=forecast_f&date=201603231453&appid=ce74b07002e7adfe";
-        String data1 = "http://open.weather.com.cn/data/?areaid=101280601&type=forecast_f&date=201603231453&appid=ce74b0";
-        //密钥
-        String key1 = "f82321_SmartWeatherAPI_33d48bf";
-        String str =  toURLString.standardURLEncoder(data, key1);
-        Log.d(TAG, "dggg:" +data1+"&key="+str);
-        queryFromCityServer(data1+"&key="+str, "city");
+    private void getCityWeather(String areaid,String key, String appid) {//
+        areaid =  "101280601";
+        String format1 = "http://open.weather.com.cn/data/?areaid=%s&type=forecast_f&date=%s&appid=%s";
+        String format2 = "http://open.weather.com.cn/data/?areaid=%S&type=forecast_f&date=%s&appid=%s&key=%s";
+        String date = getBeiJingTime();
+        String data = String.format(format1, areaid, date, appid);
+        Log.d(TAG,"data "+data);
+        String str =  toURLString.standardURLEncoder(data, key);
+        String url = String.format(format2, areaid, date, appid.substring(0,6),str);
+        Log.d(TAG,"url "+url);
+        queryFromCityServer(url);
     }
-    /**
-     * 根据传入的地址和类型去向服务器查询天气代号或者天气信息。
-     */
-    private void queryFromCityServer(final String address, final String type) {
+    private String getWeatherByJson(String weatherJson) {
+        int  updateTime =  0;
+        try {
+            JSONObject jsonObject = new JSONObject(weatherJson);
+            JSONObject weatherInfo = jsonObject.getJSONObject("f");
+            updateTime = weatherInfo.getInt("f0")%10000;
+            JSONArray jsonArray = new JSONArray(weatherInfo.getString("f1"));
+       //     for(int i = 0; i < jsonArray.length();i++){
+            int i = 0;
+            JSONObject jsonObjectWeather =jsonArray.getJSONObject(i);
+            String nightWeather = getWeatherByCode(jsonObjectWeather.getInt("fb"));
+            int nightTemp = jsonObjectWeather.getInt("fd");
+            if(updateTime < 1800) {
+                String dayWeather = getWeatherByCode(jsonObjectWeather.getInt("fa"));
+                int dayTemp = jsonObjectWeather.getInt("fc");
+                if(nightWeather.equals(nightWeather))
+                    updateWeatherInfo = dayWeather  + "\n" + dayTemp  + "~"+ nightTemp +"℃";
+                else
+                    updateWeatherInfo = "day:"+ dayWeather + "day:"+ nightWeather  + "\n" + dayTemp  + "~" + nightTemp +"℃";
+            }else
+                updateWeatherInfo = nightWeather + "\n" + nightTemp +"℃";
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return updateWeatherInfo;
+    }
+    // 根据传入的地址和类型去向服务器查询天气代号或者天气信息。
+    private void queryFromCityServer(final String address) {
         HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
             @Override
             public void onFinish(final String response) {
-
-                if ("province".equals(type)) {
-                    if (!TextUtils.isEmpty(response)) {
-                        Log.d(TAG,response);
-                    }
-                } else  if ("city".equals(type)) {
-                    if (!TextUtils.isEmpty(response)) {
-
-                        Log.d(TAG, "KKKKKKK" + response + "HHHHHH");
-                       //
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Message ms = new Message();
-                                ms.what = 1;
-                                Log.d(TAG,"send mes vill"+ms.what);
-                                handler.sendMessage(ms);
-                                Log.d(TAG, "send over" + ms.what);
-                            }
-                        }).start();
-                    }
+                if (!TextUtils.isEmpty(response)) {
+                    getWeatherByJson(response);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Message ms = new Message();
+                            ms.what = UPDATE_WEATHER;
+                            handler.sendMessage(ms);
+                        }
+                    }).start();
                 }
-            }
 
+            }
             @Override
             public void onError(Exception e) {
                 Log.d(TAG,"KKKKKKerrorHHHHHH");
