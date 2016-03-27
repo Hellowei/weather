@@ -34,5 +34,30 @@
    <string name="weather_31">强沙尘暴</string>
    <string name="weather_53">霾</string>
    <string name="weather_99">未知</string>
+    <string name="windDirection_00">风向不定</string>
+    <string name="windDirection_01">东北风</string>
+    <string name="windDirection_02">东风</string>
+    <string name="windDirection_03">东南风</string>
+    <string name="windDirection_04">南风</string>
+    <string name="windDirection_05">西南风</string>
+    <string name="windDirection_06">西风</string>
+    <string name="windDirection_07">西北风</string>
+    <string name="windDirection_08">北风</string>
+    <string name="windDirection_09">旋转风</string>
+    <string name="windPower_00">微风</string>
+    <string name="windPower_01">3~4级风</string>
+    <string name="windPower_02">4~5级风</string>
+    <string name="windPower_03">5~6级风</string>
+    <string name="windPower_04">6~7级风</string>
+    <string name="windPower_05">7~8级风</string>
+    <string name="windPower_06">8~9级风</string>
+    <string name="windPower_07">9~10级风</string>
+    <string name="windPower_08">10~11级风</string>
+    <string name="windPower_09">11~12级风</string>
+    <string name="sun_up_time">日出时间：</string>
+    <string name="sun_down_time">日落时间：</string>
+    <string name="day">白天：</string>
+    <string name="night">晚上：</string>
+    <string name="tempUnit">℃</string>
 
 </resources>
