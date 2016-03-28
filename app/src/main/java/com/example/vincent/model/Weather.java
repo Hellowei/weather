@@ -1,5 +1,7 @@
 package com.example.vincent.model;
 
+import android.util.Log;
+
 /**
  * Created by Vincent on 2016/3/25.
  */
@@ -47,5 +49,9 @@ public class Weather {
     public int getFg(){ return fg;}
     public int getFh(){ return fh;}
     public String getFi(){return fi;}
+    public void printer(){
+        Log.d("weatherActivity",countryName+"id"+id+"codeid"+countryCode+"weadate"+weatherDate+"update"+updateTime+"a"+fa+"b"+fb+"c"+fc+"d"+fd+"e"
+                +fe+"f"+ff+"g"+fg+"h"+fh+fi);
+    }
 
 }

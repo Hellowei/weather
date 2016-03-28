@@ -124,25 +124,27 @@ public class weatherActivity extends AppCompatActivity {
         List<Weather> list = weatherDB.loadWeather(countryCode);
         boolean isNewest = false;
         Log.d(TAG, "aabbsize=" + list.size());
-      /*  for(int i = 0; i < list.size();i++) {
+        for(int i = 0; i < list.size();i++) {
             Weather weather = list.get(i);
             if (weather.getWeatherDate() == curDate) {
-                int lastUpdateTimeHHMM = weather.getUpdateTime() % 10000;
+                int lastUpdateTimeHHMM = weather.getUpdateTime();
                 if (lastUpdateTimeHHMM == publishTime[0] && publishTime[1] <= curHHMM) {
                     isNewest = true;
                 }
                 if (lastUpdateTimeHHMM == publishTime[1] && publishTime[2] <= curHHMM) {
                     isNewest = true;
                 }
-                if (lastUpdateTimeHHMM == publishTime[3] && publishTime[0] <= curHHMM && publishTime[3] > curHHMM) {
+                if (lastUpdateTimeHHMM == publishTime[2] &&( publishTime[2] <= curHHMM || publishTime[0] > curHHMM)) {
                     isNewest = true;
                 }
+                Log.d(TAG,isNewest+"dd");
                 if (isNewest) {
                     getWeatherByWeather(weather);
                     return;
                 }
             }
-        }*/
+        }
+        Log.d(TAG,isNewest+"");
         if (!isNewest) {
             getCityWeather( countryCode, key,  appid);
         }
@@ -182,19 +184,27 @@ public class weatherActivity extends AppCompatActivity {
     private String getWeatherByWeather(Weather weather) {
         String countryName = weather.getCountryName();
         String dayInfo = "";
+        weather.printer();
         if(weather.getFc() != INVALID_TEMP) {
+            Log.d(TAG,weather.getFa()+"s");
             String dayWeather = getWeatherByCode(Integer.parseInt(weather.getFa()));
             int dayTemp = weather.getFc();
+            Log.d(TAG,weather.getFa()+"ds"+dayTemp);
             String dayWindDirection = getWindDirectionByCode(weather.getFe());
             String dayWindPower = getWindPoerByCode(weather.getFg());
             String sunUp = getString(R.string.sun_up_time) + weather.getFi().substring(0,4);
             dayInfo = getString(R.string.day) + dayWeather + dayTemp + getString(R.string.tempUnit) + dayWindPower;
         }
+        Log.d(TAG,weather.getFb()+"dsdf"+weather.getFc());
         String nightWeather = getWeatherByCode(Integer.parseInt(weather.getFb()));
+        Log.d(TAG,weather.getFb()+"dsdddf"+weather.getFc());
         int nightTemp = weather.getFd();
         String nightWindDirection = getWindDirectionByCode(weather.getFf());
+        Log.d(TAG,weather.getFb()+"ds333df"+weather.getFc());
         String nightWindPower = getWindPoerByCode(weather.getFh());
+        Log.d(TAG,weather.getFb()+"ds444df"+weather.getFc());
         String sunUp = getString(R.string.sun_down_time) + weather.getFi().substring(5,9);
+        Log.d(TAG,weather.getFb()+"ds5555df"+weather.getFc());
         String nightInfo = getString(R.string.night) + nightWeather + nightTemp + getString(R.string.tempUnit) + nightWindPower;
         updateWeatherInfo =dayInfo +"\n"+ nightInfo;
         new Thread(new Runnable() {
@@ -217,6 +227,7 @@ public class weatherActivity extends AppCompatActivity {
             updateTime = Integer.parseInt(weatherInfo.getString("f0").substring(8,12));
             JSONArray jsonArray = new JSONArray(weatherInfo.getString("f1"));
             JSONObject areaInfo = jsonObject.getJSONObject("c");
+
             for(int i = 0; i < jsonArray.length()-2;i++) {
                 Log.d(TAG,"updateTime"+updateTime);
                 Weather weather = new Weather();

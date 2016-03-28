@@ -59,12 +59,11 @@ public class WeatherDB {
 			values.put("country_code",countryCode );
 			values.put("country_name", weather.getCountryName());
 		 	values.put("weather_date", weatherDate);
-			Log.d(TAG, "updatetime " + weather.getUpdateTime());
 		 	values.put("update_time", weather.getUpdateTime());
 			Log.d(TAG, "updatetime ");
+			values.put("day_temp", weather.getFc());
 			if(hasDayData){
 				values.put("day_weather", weather.getFa());
-				values.put("day_temp", weather.getFc());
 				values.put("day_direction", weather.getFe());
 				values.put("day_wind_power", weather.getFg());
 			}
@@ -117,7 +116,6 @@ public class WeatherDB {
 		Cursor cursor = db.query("Weather", null, "country_code = ?",
 				new String[] { String.valueOf(countryCode) }, null, null, null);
 		Log.d(TAG, cursor.getCount()+"loadWeather++");
-
 		if (cursor.moveToFirst()) {
 			do {
 				Weather weather = new Weather();
@@ -130,8 +128,6 @@ public class WeatherDB {
 				Log.d(TAG, "a");
 				weather.setWeatherDate(cursor.getInt(cursor.getColumnIndex("weather_date")));
 				Log.d(TAG, "a4");
-
-
 				weather.setFa(cursor.getString(cursor.getColumnIndex("day_weather")));
 				Log.d(TAG, "a5");
 			 	weather.setFc(cursor.getInt(cursor.getColumnIndex("day_temp")));
